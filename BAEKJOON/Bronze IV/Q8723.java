@@ -1,7 +1,8 @@
 import java.io.*;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
-class Q8718 {
+class Q8723 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -9,20 +10,19 @@ class Q8718 {
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
         br.close();
         
-        int x = Integer.parseInt(st.nextToken());
-        int k = Integer.parseInt(st.nextToken());
+        int[] arr = new int[3];
+        for(int i=0; i<arr.length; i++)
+            arr[i] = Integer.parseInt(st.nextToken());
         
-        int ml;
-        if(k*7 <= x)
-            ml = k * 7000;
-        else if (k*3.5 <= x)
-            ml = k * 3500;
-        else if (k*1.75 <= x)
-            ml = k * 1750;
-        else
-            ml = 0;
+        Arrays.sort(arr);
 
-        bw.write(Integer.toString(ml));
+        if (arr[0] == arr[1] && arr[1] == arr[2])
+            bw.write("2");
+        else if (arr[0]*arr[0] + arr[1]*arr[1] == arr[2]*arr[2])
+            bw.write("1");
+        else
+            bw.write("0");
+        
         bw.flush();
         bw.close();
         
