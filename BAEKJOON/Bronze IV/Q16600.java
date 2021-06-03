@@ -1,24 +1,15 @@
 import java.io.*;
 
-class Q14038 {
+class Q16600 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         
-        int win=0;
-        for(int i=0; i<6; i++)
-            if(br.readLine().equals("W")) win++; 
-        
+        double a = Double.parseDouble(br.readLine());
         br.close();
         
-        if(win >= 5)
-            bw.write("1");
-        else if(win >= 3)
-            bw.write("2");
-        else if(win >= 1)
-            bw.write("3");
-        else
-            bw.write("-1");
+        double res = 4 * Math.sqrt(a);
+        bw.write(String.valueOf(res));
         
         bw.flush();
         bw.close();

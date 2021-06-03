@@ -5,7 +5,8 @@ class Q14935 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         
-        String x = br.readLine();
+        //String x = br.readLine();
+        br.readLine();
         br.close();
 
         bw.write("FA");
