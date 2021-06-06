@@ -1,2 +1,31 @@
-# Java .class file
+####################
+   Java Template
+####################
+
 *.class
+
+
+####################
+  Mac OS Template
+####################
+
+.DS_Store
+
+
+####################
+  Eclipse Template
+####################
+
+*.pydevproject
+.project
+.metadata
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+.classpath
+.settings/
+.loadpath
+/src/main/resources/rebel.xml
