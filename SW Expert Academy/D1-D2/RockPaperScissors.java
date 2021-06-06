@@ -22,22 +22,10 @@ class RockPaperScissors {
         int A = Integer.parseInt(st.nextToken());
         int B = Integer.parseInt(st.nextToken());
 
-        if (A == 1) {
-            if (B == 2)
-                bw.write("B");
-            else
-                bw.write("A");
-        } else if (A == 2) {
-            if (B == 1)
-                bw.write("A");
-            else
-                bw.write("B");
-        } else {
-            if (B == 3)
-                bw.write("B");
-            else
-                bw.write("A");
-        }
+        if( (A == 1 && B == 3) || (A == 2 && B == 1) || (A == 3 && B == 2) )
+            bw.write("A");
+        else
+            bw.write("B");
 
         bw.flush();
         bw.close();
