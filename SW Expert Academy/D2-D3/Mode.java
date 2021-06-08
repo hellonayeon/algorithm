@@ -5,8 +5,6 @@ import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 import java.io.IOException;
 
-import java.util.StringTokenizer;
-
 import java.io.FileInputStream;
 
 class Mode {
