@@ -31,5 +31,7 @@ class Sum {
             Arrays.sort(res);
             System.out.println("#" + tc + " " + res[201]);
         }
+
+        br.close();
     }
 }
