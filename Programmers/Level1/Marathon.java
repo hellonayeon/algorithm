@@ -7,29 +7,15 @@ class Marathon {
 
         Map<String, Integer> map = new HashMap<>();
 
-        for(int i = 0; i < participant.length; i++) {
-            String key = participant[i];
+        for(String p : participant) map.put(p, map.getOrDefault(p, 0) + 1);
+        for(String c : completion) map.put(c, map.get(c) - 1);
 
-            if(map.containsKey(key))
-                map.put(key, map.get(key) + 1);
-
-            else
-                map.put(key, 1);
+        for(String key : map.keySet()) {
+            if(map.get(key) != 0) { 
+                answer = key;
+                break;
+            }
         }
-
-
-        for(int i = 0; i < completion.length; i++) {
-            String key = completion[i];
-
-            if(map.get(key) != 1)
-                map.put(key, map.get(key) - 1);
-
-            else
-                map.remove(key);
-
-        }
-
-        answer = map.keySet().iterator().next();
 
         return answer;
     }
