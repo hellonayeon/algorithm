@@ -1,48 +1,30 @@
 class SecretMap {
     public String[] solution(int n, int[] arr1, int[] arr2) {
-        String[] bin1 = dec_to_bin(n, arr1);
-        String[] bin2 = dec_to_bin(n, arr2);
+        int[] arr = new int[n]; // OR 연산 수행한 배열
         
-        return decode(n, bin1, bin2);
+        for(int idx = 0; idx < n; idx++)
+            arr[idx] = arr1[idx] | arr2[idx];
+        
+        return decode(n, arr);
     }
     
-    public String[] dec_to_bin(int n, int[] arr) {
-        String[] bins = new String[n];
-        
-        for(int idx = 0; idx < n; idx++) {
-            int dec = arr[idx];
-            
-            String str = "";
-            while(dec > 0) {
-                str = (dec % 2) + str;
-                dec /= 2;
-            }
-            
-            // 이진수 자릿수 맞추기
-            if(str.length() < n) {
-                int range = n - str.length();
-                for(int i = 0; i < range; i++)
-                    str = "0" + str;    
-            }
-            
-            bins[idx] = str;
-        }
-        
-        return bins;
-    }
-    
-    public String[] decode(int n, String[] bin1, String[] bin2) {
+    public String[] decode(int n, int[] arr) {
         String[] cipher_txt = new String[n];
         
         for(int idx = 0; idx < n; idx++) {
-            String txt = "";
+            cipher_txt[idx] = "";
             
-            for(int i = 0; i < n; i++) {
-                if(bin1[idx].charAt(i) == '0' && bin2[idx].charAt(i) == '0') txt += " ";
-                else txt += "#";
+            int dec = arr[idx];
+            while(dec > 0) {
+                cipher_txt[idx] = ((dec % 2 == 0) ? " " : "#") + cipher_txt[idx];
+                dec /= 2;
             }
             
-            cipher_txt[idx] = txt;
+            if(cipher_txt[idx].length() < n) {
+                int range = n - cipher_txt[idx].length();
+                for(int i = 0; i < range; i++)
+                    cipher_txt[idx] = " " + cipher_txt[idx];
+            }
         }
         return cipher_txt;
     }
