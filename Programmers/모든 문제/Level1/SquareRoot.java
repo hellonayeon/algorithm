@@ -1,8 +1,8 @@
 class SquareRoot {
     public long solution(long n) { 
-        for(long x = 1; x <= n; x++)
-            if(x * x == n) return (x + 1) * (x + 1);   
+        if(Math.pow((int) Math.sqrt(n), 2) == n)
+            return (long) Math.pow(Math.sqrt(n) + 1, 2);
 
         return -1;
-    }    
+    }   
 }
