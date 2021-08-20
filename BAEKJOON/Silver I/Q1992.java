@@ -33,14 +33,18 @@ class Q1992 {
             return;
         }
 
-        int range = (er - sr) / 2;
-        sb.append('('); // 영역 시작 지점에서 여는 괄호
-        for(int r = sr; r < er; r+=range) {
-            for(int c = sc; c < ec; c+=range) {
-                compress(r, c, r + range, c + range);
-            }
-        }
-        sb.append(')'); // 영역 종료 지점에서 닫는 괄호
+        // 현재 위치에서 얼마나 이동할 것인지 계산
+        int mr = sr+(er-sr)/2;
+		int mc = sc+(ec-sc)/2;
+		
+        sb.append('(');
+		
+        compress(sr,sc,mr,mc); // 왼쪽 위
+		compress(sr,mc,mr,ec); // 오른쪽 위
+		compress(mr,sc,er,mc); // 왼쪽 아래
+		compress(mr,mc,er,ec); // 오른쪽 아래
+        
+        sb.append(')');
     }
 
     public static boolean compare(int val, int sr, int sc, int er, int ec) {
