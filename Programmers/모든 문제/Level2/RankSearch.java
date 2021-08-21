@@ -1,36 +1,64 @@
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 
 class RankSearch {
-    public int[] solution(String[] info, String[] query) {
+    
+    HashMap<String, ArrayList<Integer>> infoMap = new HashMap<>();
+    
+    public int[] solution(String[] info, String[] query) {                
+        for(int idx = 0; idx < info.length; idx++)
+            setInfo(info[idx].split(" "), "", 0);
+        
+        for(String key : infoMap.keySet()) 
+            Collections.sort(infoMap.get(key));
+        
+        return match(query);
+    }
+    
+    public void setInfo(String[] info, String str, int depth) {
+        if(depth == 4) {
+            if(!infoMap.containsKey(str)) {
+                ArrayList<Integer> list = new ArrayList<>();
+                list.add(Integer.parseInt(info[4]));
+                infoMap.put(str, list);
+            }
+            else infoMap.get(str).add(Integer.parseInt(info[4]));
+            return;
+        }
+        
+        setInfo(info, str+"-", depth+1);
+        setInfo(info, str+info[depth], depth+1);
+    }
+    
+    public int[] match(String[] query) {
         int[] ans = new int[query.length];
-
-        HashSet<Integer> nonConditions = new HashSet<>(); // 조건에 해당하지 않는 지원자
-                
-        String[][] infos = new String[info.length][5];
-        for(int i = 0; i < info.length; i++)
-            infos[i] = info[i].split(" ");    
         
         for(int i = 0; i < query.length; i++) {
-            String[] con = query[i].replaceAll(" and", "").split(" "); // 각 쿼리의 조건
+            String[] element = query[i].split(" ");
             
-            for(int j = 0; j < con.length; j++) {
-                if(con[j].equals("-")) continue;
-                
-                for(int k = 0; k < infos.length; k++) {
-                    if(nonConditions.contains(k)) continue;
-                    if(j == con.length - 1) {
-                        int qs = Integer.parseInt(con[j]);
-                        int s = Integer.parseInt(infos[k][j]);
-                        
-                        if(s < qs) nonConditions.add(k);
-                        
-                        continue;
-                    } 
-                    if(!infos[k][j].equals(con[j])) nonConditions.add(k);
+            String key = "";
+            for(int j = 0; j < element.length-1; j++) {
+                if(element[j].equals("and")) continue;
+                key += element[j];
+            }
+            
+            if(!infoMap.containsKey(key)) continue;
+            
+            ArrayList<Integer> scores = infoMap.get(key);
+            int score = Integer.parseInt(element[element.length-1]);
+            int start = 0, end = scores.size() - 1;
+            while(start <= end){
+                int mid = (start + end) / 2;
+                if(scores.get(mid) < score){
+                    start = mid + 1;
+                }
+                else {
+                    end = mid - 1;
                 }
             }
-            ans[i] = infos.length - nonConditions.size();
-            nonConditions.clear();
+            
+            ans[i] = scores.size() - start;
         }
         
         return ans;
