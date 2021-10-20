@@ -5,30 +5,28 @@ import java.io.InputStreamReader;
 class Q1157 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String word = br.readLine().toUpperCase();
+        String word = br.readLine();
 
         // 알파벳 개수 카운트
         int[] cnt = new int[26];
         for(int i = 0; i < word.length(); i++) {
-            cnt[(word.charAt(i) - 0) - 65]++;
+            char c = word.charAt(i);
+            if(c < 91) cnt[c - 65]++;
+            else cnt[c - 97]++;
         }
 
         // 가장 많이 나온 알파벳 구하기
-        int max = cnt[0], tmp = 0;
-        int idx = 0;
+        int max = cnt[0];
+        int ch = 0;
         for(int i = 1; i < 26; i++) {
             if(cnt[i] > max) {
                 max = cnt[i];
-                idx = i;
+                ch = i;
             }
-            else if(cnt[i] == max) tmp = cnt[i];
+            // '?' ascii == 63
+            else if(cnt[i] == max) ch = -2;
         }
 
-        if(max == tmp) {
-            System.out.println("?");
-        }
-        else {
-            System.out.println((char)('A' + idx));
-        }
+        System.out.println((char)(65+ch));
     }
 }
