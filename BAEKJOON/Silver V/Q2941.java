@@ -3,36 +3,30 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 class Q2941 {
-
-    final static String[] CROATIA = { "c=", "c-", "dz=", "d-", "lj", "nj", "s=", "z=" };
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        char[] word = br.readLine().toCharArray();
+        String word = br.readLine();
 
-        int cCnt = 0;
-        for(String croatia : CROATIA) {
-            int cLen = croatia.length();
+        int cnt = 0;
+        for(int i = 1; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            char prev = word.charAt(i-1);
 
-            for(int i = 0; i < word.length-(cLen-1); i++) {
-                String tmp = "";
-                for(int j = i; j < i+cLen; j++) {
-                    tmp += word[j];
+            if(ch == '=') {
+                if(prev == 'c' || prev == 's') cnt++;
+                else if(prev == 'z') {
+                    if(i > 1 && word.charAt(i-2) == 'd') cnt+=2;
+                    else cnt++;
                 }
-                
-                if(tmp.equals(croatia)) {
-                    for(int j = i; j < i+cLen; j++) word[j] = ' ';
-                    cCnt++;
-                    i += cLen-1;
-                } 
+            }
+            else if(ch == '-') {
+                if(prev == 'c' || prev == 'd') cnt++;
+            }
+            else if(ch == 'j') {
+                if(prev == 'l' || prev == 'n') cnt++;
             }
         }
 
-        int tCnt = cCnt;
-        for(char ch : word) {
-            if(ch != ' ') tCnt++;
-        }
-
-        System.out.println(tCnt);
+        System.out.println(word.length() - cnt);
     }
 }
