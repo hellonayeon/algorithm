@@ -13,14 +13,9 @@ class Q2869 {
         int B = Integer.parseInt(st.nextToken());
         int V = Integer.parseInt(st.nextToken());
 
-        int day = 0;
-        int height = 0;
-        while(true) {
+        int day = (V - B) / (A - B);
+         if( (V - B) % (A - B) != 0 ) {
             day++;
-            height += A;
-            if(height >= V) break;
-
-            height -= B;
         }
 
         System.out.println(day);
