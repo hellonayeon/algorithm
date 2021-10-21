@@ -7,11 +7,11 @@ class Q1436 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        int cnt = 0;
-        int num = 0;
+        int cnt = 1;
+        int num = 666;
+
         while(cnt != N) {
-            num++;
-            if((num + "").matches(".*666.*")) cnt++;
+            if(String.valueOf(++num).contains("666")) cnt++;
         }
 
         System.out.println(num);
