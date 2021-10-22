@@ -13,14 +13,10 @@ class Q10828 {
         MyStack stack = new MyStack();
         StringBuilder sb = new StringBuilder();
 
-        for(int i = 0; i < N; i++) {
-            String[] input = br.readLine().split(" ");
-            String cmd = input[0];
+        while(N-- > 0) {
+            String cmd = br.readLine();
 
             switch(cmd) {
-            case "push":
-                stack.push(Integer.parseInt(input[1]));
-                break;
             case "pop":
                 sb.append(stack.pop()).append("\n");
                 break;
@@ -33,6 +29,9 @@ class Q10828 {
             case "top":
                 sb.append(stack.top()).append("\n");
                 break;
+            default:
+                stack.push(Integer.parseInt(cmd.substring(5)));
+                break;
             }
         }
 
@@ -42,31 +41,26 @@ class Q10828 {
 
     static class MyStack {
         int[] arr = new int[MAX_SIZE];
-        int idx = -1;
+        int size = 0;
 
         public void push(int num) {
-            arr[++idx] = num;
+            arr[size++] = num;
         }
 
         public int pop() {
-            if(empty() == 1) return -1;
-
-            int num = arr[idx];
-            arr[idx--] = 0;
-            
-            return num;
+            return (empty() == 1) ? -1 : arr[(size--) - 1];
         }
 
         public int size() {
-            return idx+1;
+            return size;
         }
 
         public int empty() {
-            return (idx == -1) ? 1 : 0;
+            return (size == 0) ? 1 : 0;
         }
 
         public int top() {
-            return (empty() == 0) ? arr[idx] : -1;
+            return (empty() == 1) ? -1 : arr[size - 1];
         }
     }
 }
