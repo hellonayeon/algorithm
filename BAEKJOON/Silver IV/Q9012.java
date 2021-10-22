@@ -11,28 +11,36 @@ class Q9012 {
 
         StringBuilder sb = new StringBuilder();
         while(T-- > 0) {
-            Stack<Character> stack = new Stack<>();
             String input = br.readLine();
-            
-            int i;
-            for(i = 0; i < input.length(); i++) {
-                char ps = input.charAt(i);
 
-                if(ps == '(') {
-                    stack.push(ps);
-                }
-                else {
-                    if(stack.empty()) break;
-                    else stack.pop();
-                }
-            }
-
-            if(i == input.length() && stack.empty()) 
+            if(vps(input)) {
                 sb.append("YES").append("\n");
-            else 
+            }   
+            else {
                 sb.append("NO").append("\n");
+            }
         }
 
         System.out.print(sb);
+    }
+
+    public static boolean vps(String str) {
+        Stack<Character> stack = new Stack<>();
+
+        for(int i = 0; i < str.length(); i++) {
+            char ps = str.charAt(i);
+
+            if(ps == '(') {
+                stack.push(ps);
+            }
+            else {
+                if(stack.empty()) {
+                    return false;
+                }
+                stack.pop();
+            }
+        }
+
+        return (stack.empty()) ? true : false;
     }
 }
