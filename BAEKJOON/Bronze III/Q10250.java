@@ -17,11 +17,10 @@ class Q10250 {
             int W = Integer.parseInt(st.nextToken());
             int N = Integer.parseInt(st.nextToken());
 
-            int YY = (N % H != 0) ? N % H : H;
-            int XX = (N % H != 0) ? N / H + 1 : N / H;
-            
-            String room = YY + String.format("%02d", XX);
-            sb.append(room).append("\n");
+            if(N % H != 0) 
+                sb.append( (N%H)*100 + (N/H+1) ).append("\n");
+            else
+                sb.append( H*100 + (N/H) ).append("\n");
         }
 
         System.out.print(sb);
