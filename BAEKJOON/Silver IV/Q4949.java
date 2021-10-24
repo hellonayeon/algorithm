@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import java.util.Stack;
-
 class Q4949 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -12,35 +10,37 @@ class Q4949 {
         while(true) {
             String input = br.readLine();
             if(input.equals(".")) break;
-
-            if(check(input)) {
-                sb.append("yes").append("\n");
-            }
-            else {
-                sb.append("no").append("\n");
-            }
+            
+            sb.append(check(input)).append("\n");
         }
 
         System.out.print(sb);
     }
 
-    public static boolean check(String str) {
-        Stack<Character> stack = new Stack<>();
+    public static String check(String str) {
+        char[] stack = new char[str.length()];
+        int size = 0;
 
         for(int i = 0; i < str.length(); i++) {
             char ch = str.charAt(i);
 
-            if(ch == '(' || ch == '[') stack.push(ch);
+            if(ch == '(' || ch == '[') {
+                stack[size++] = ch;
+            }
             else if(ch == ')') {
-                if(stack.empty() || stack.peek() != '(') return false;
-                stack.pop(); 
+                if(size == 0 || stack[size-1] != '(') {
+                    return "no";
+                }
+                size--;
             }
             else if(ch == ']') {
-                if(stack.empty() || stack.peek() != '[') return false;
-                stack.pop();
+                if(size == 0 || stack[size-1] != '[') {
+                    return "no";
+                }
+                size--;
             }
         }
 
-        return (stack.empty()) ? true : false;
+        return (size == 0) ? "yes" : "no";
     }
 }
