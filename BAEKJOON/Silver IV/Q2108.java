@@ -1,56 +1,54 @@
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 class Q2108 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        double sum = 0;
-        int[] arr = new int[N];
-        int[] cnt = new int[8001];
+        int sum = 0;
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+
+        int median = 0, mode = 0;
+
+        int[] arr = new int[8001];
         for(int i = 0; i < N; i++) {
-            int num = Integer.parseInt(br.readLine());
-            arr[i] = num;
-            sum += num;
-            cnt[num+4000]++;
+            int val = Integer.parseInt(br.readLine());
+            sum += val;
+            arr[val+4000]++;
+
+            if(val > max) max = val;
+            if(val < min) min = val;
         }
 
-        Arrays.sort(arr);
-
-        StringBuilder sb = new StringBuilder();
-        // 산술평균
-        sb.append(Math.round(sum/N)).append("\n");
-
-        // 중앙값
-        sb.append(arr[N/2]).append("\n");
-
-        // 최빈값
-        int freq = -1, mode = 0, tmp = 0;
-        boolean dup = false;
-        for(int i = 0; i < cnt.length; i++) {
-            if(cnt[i] == 0) continue;
-
-            int num = i-4000;
-
-            if(cnt[i] > freq) {
-                mode = num;
-                dup = false;
-
-                freq = cnt[i];
+        // 중간값, 최빈값
+        int cnt = 0, freq = 0;
+        boolean flag = false;
+        for(int i = min+4000; i <= max+4000; i++) {
+            // 중간값
+            if(cnt < (N + 1) / 2) {
+                cnt += arr[i];
+                median = i - 4000;
             }
-            else if(!dup && cnt[i] == freq) {
-                tmp = num;
-                dup = true;
+
+            // 최빈값
+            if(arr[i] > freq) {
+                freq = arr[i];
+                mode = i-4000;
+                flag = true;
+            }
+            else if(flag && arr[i] == freq) {
+                mode = i-4000;
+                flag = false;
             }
         }
-        sb.append(dup ? tmp : mode).append("\n");
+        
 
-        // 범위
-        sb.append(arr[N-1]-arr[0]).append("\n");
-
-        System.out.print(sb);
+        System.out.println(Math.round((double)sum/N));
+        System.out.println(median);
+        System.out.println(mode);
+        System.out.println(max-min);
     }
 }
