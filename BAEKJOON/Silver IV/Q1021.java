@@ -31,23 +31,19 @@ class Q1021 {
 
         for(int i = 0; i < rm.length; i++) {
             int pos = deque.indexOf(rm[i]);
-            int left = pos;
-            int right = deque.size() - pos;
+            int size = deque.size();
+            int half = (deque.size() % 2 == 0) ? size / 2 - 1 : size / 2;
 
-            if(left < right) {
-                cnt += left;
-
-                for(int j = 0; j < left; j++) {
-                    int tmp = deque.pollFirst();
-                    deque.offerLast(tmp);
+            if(pos <= half) {
+                for(int j = 0; j < pos; j++) {
+                    deque.offerLast(deque.pollFirst());
+                    cnt++;
                 }
             }
             else {
-                cnt += right;
-
-                for(int j = 0; j < right; j++) {
-                    int tmp = deque.pollLast();
-                    deque.offerFirst(tmp);
+                for(int j = 0; j < size - pos; j++) {
+                    deque.offerFirst(deque.pollLast());
+                    cnt++;
                 }
             }
             deque.pollFirst();
