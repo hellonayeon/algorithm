@@ -5,9 +5,11 @@ import java.io.InputStreamReader;
 class Q2231 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
+        String input = br.readLine();
+        int N = Integer.parseInt(input);
+        int len = input.length();
 
-        for(int i = 1; i <= 1000000; i++) {
+        for(int i = N-len*9; i <= N; i++) {
             char[] chs = String.valueOf(i).toCharArray();
             int sum = i;
             for(int j = 0; j < chs.length; j++) {
