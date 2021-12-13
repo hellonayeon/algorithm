@@ -24,10 +24,10 @@ class Q1463 {
             return;
         }
 			
-		calc(num-1, cnt+1);
 		if (num % 2 == 0)
 			calc(num/2, cnt+1);
 		if (num % 3 == 0)
 			calc(num/3, cnt+1);
+        calc(num-1, cnt+1);
 	}
 }
