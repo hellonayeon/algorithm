@@ -1,37 +1,29 @@
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 class Q1541 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String formula = br.readLine();
 
-        boolean isSub = false;
-        int res = 0;
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<formula.length(); i++) {
-            char ch = formula.charAt(i);
+        // '-' 기준으로 자르기
+        StringTokenizer tokens = new StringTokenizer(formula, "-");
+        StringTokenizer first = new StringTokenizer(tokens.nextToken(), "+");
 
-            if(ch >= '0' && ch <= '9') {
-                sb.append(ch);
-            }
-            else {
-                int num = Integer.parseInt(sb.toString());
-                if(isSub) {
-                    res -= num;
-                }
-                else if(ch == '-') {
-                    res += num;
-                    isSub = true;
-                }
-                else {
-                    res += num;
-                }
-                sb = new StringBuilder();
+        int res = 0;
+        while(first.hasMoreTokens()) {
+            res += Integer.parseInt(first.nextToken());
+        }
+
+        while(tokens.hasMoreTokens()) {
+            StringTokenizer token = new StringTokenizer(tokens.nextToken(), "+");
+
+            while(token.hasMoreTokens()) {
+                res -= Integer.parseInt(token.nextToken());
             }
         }
-        res += (isSub) ? Integer.parseInt(sb.toString()) * -1 : Integer.parseInt(sb.toString());
 
         System.out.println(res);
     }
