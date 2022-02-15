@@ -17,9 +17,9 @@ class Q7576 {
     static int M;
     static int N;
 
-    static int ripeTomatoes;
-    static int unripeTomatoes;
-    static int day;
+    static int numberOfDays;
+
+    static Queue<Tomato> queue;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,54 +29,64 @@ class Q7576 {
         N = Integer.parseInt(st.nextToken());
 
         box = new int[N][M];
-        Queue<int[]> queue = new LinkedList<>();
+        queue = new LinkedList<>();
 
         for (int i=0; i<N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j=0; j<M; j++) {
                 box[i][j] = Integer.parseInt(st.nextToken());
 
-                if (box[i][j] == 0) {
-                    unripeTomatoes++;
-                }
-                else if (box[i][j] == 1) {
-                    queue.add(new int[]{i, j});
+                if (box[i][j] == 1) {
+                    queue.add(new Tomato(i, j, 1));
                 }
             }
         }
-        
-        calc(queue);
-        day = (ripeTomatoes == unripeTomatoes) ? day : -1;
-        
-        System.out.println(day);
+
+        spread();
+        numberOfDays = areAllTomatoesRipe() ? numberOfDays - 1 : -1;
+
+        System.out.println(numberOfDays);
+
     }
 
-    private static void calc(Queue<int[]> queue) {
-        Queue<int[]> tmpQueue = new LinkedList<>();
-
+    private static void spread() {
         while (!queue.isEmpty()) {
-            int[] pos = queue.poll();
-            int x = pos[0];
-            int y = pos[1];
-
-            for (int k=0; k<4; k++) {
-                int nx = x + dx[k];
-                int ny = y + dy[k];
-
-                if (nx < 0 || nx >= N || ny < 0 || ny >= M || box[nx][ny] != 0) {
-                    continue;
-                }
-
-                box[nx][ny] = 1;
-                ripeTomatoes++;
-                tmpQueue.add(new int[]{nx, ny});
-            }
+            Tomato tomato = queue.poll();
             
+            for (int k=0; k<4; k++) {
+                int nx = tomato.x + dx[k];
+                int ny = tomato.y + dy[k];
+
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M && box[nx][ny] == 0) {
+                    box[nx][ny] = tomato.day;
+                    queue.add(new Tomato(nx, ny, tomato.day + 1));
+                }
+            }
+
+            numberOfDays = tomato.day;
         }
-        
-        if (!tmpQueue.isEmpty()) {
-            day++;
-            calc(tmpQueue);
+    }
+
+    private static boolean areAllTomatoesRipe() {
+        for (int i=0; i<N; i++) {
+            for (int j=0; j<M; j++) {
+                if (box[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }  
+
+    static class Tomato {
+        int x;
+        int y;
+        int day;
+    
+        public Tomato(int x, int y, int day) {
+            this.x = x;
+            this.y = y;
+            this.day = day;
         }
     }
 }
