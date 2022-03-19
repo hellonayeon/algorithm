@@ -8,9 +8,10 @@ import java.util.LinkedList;
 
 class Q7569 {
 
-    static int[] dx = {0, 0, -1, 1};
-    static int[] dy = {-1, 1, 0, 0};
-    static int[] dz = {-1, 1};
+    // 위 아래 앞 뒤 좌 우
+    static int[] dx = {0, 0, 0, 0, -1, 1};
+    static int[] dy = {0, 0, -1, 1, 0, 0};
+    static int[] dz = {-1, 1, 0, 0, 0, 0};
 
     static int M;
     static int N;
@@ -55,23 +56,14 @@ class Q7569 {
         while (!queue.isEmpty()) {
             Tomato tomato = queue.poll();
 
-            // 위아래로 인접한 익지 않은 토마토 확인
-            for (int i=0; i<2; i++) {
-                int nz = tomato.z + dz[i];
-                if (nz < 0 || nz >= H || box[nz][tomato.y][tomato.x] != 0) continue;
+            for (int k = 0; k < 6; k++) {
+                int nx = tomato.x + dx[k];
+                int ny = tomato.y + dy[k];
+                int nz = tomato.z + dz[k];
+                if (nx < 0 || nx >= M || ny < 0 || ny >= N || nz < 0 || nz >= H || box[nz][ny][nx] != 0) continue;
 
-                box[nz][tomato.y][tomato.x] = tomato.day;
-                queue.add(new Tomato(tomato.x, tomato.y, nz, tomato.day + 1));
-            }
-
-            // 앞뒤좌우로 인접한 익지 않은 토마토 확인
-            for (int j = 0; j < 4; j++) {
-                int nx = tomato.x + dx[j];
-                int ny = tomato.y + dy[j];
-                if (nx < 0 || nx >= M || ny < 0 || ny >= N || box[tomato.z][ny][nx] != 0) continue;
-
-                box[tomato.z][ny][nx] = tomato.day;
-                queue.add(new Tomato(nx, ny, tomato.z, tomato.day + 1));
+                box[nz][ny][nx] = tomato.day;
+                queue.add(new Tomato(nx, ny, nz, tomato.day + 1));
             }
             
             numberOfDays = tomato.day;
