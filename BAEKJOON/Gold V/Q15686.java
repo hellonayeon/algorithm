@@ -6,15 +6,15 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 
-
 class Q15686 {
 
     static int N;
     static int M;
-    static int[][] city;
     static List<Location> houses;
-    static List<Location> francises;
-    static int minChickDistanceOfCity = 100;
+    static List<Location> franchise;
+    static boolean[] visited;
+
+    static int min = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -22,67 +22,52 @@ class Q15686 {
 
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
-        city = new int[N][N];
-        
+
         houses = new ArrayList<>();
-        francises = new ArrayList<>();
-
-        for (int i=0; i<N; i++) {
+        franchise = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            for (int j=0; j<N; j++) {
-                city[i][j] = Integer.parseInt(st.nextToken());
+            for (int j = 0; j < N; j++) {
+                int val = Integer.parseInt(st.nextToken());
 
-                if (city[i][j] == 1) {
+                if (val == 1) {
                     houses.add(new Location(i, j));
-                }
-                else if (city[i][j] == 2) {
-                    francises.add(new Location(i, j));
+                } else if (val == 2) {
+                    franchise.add(new Location(i, j));
                 }
             }
         }
+        visited = new boolean[franchise.size()];
 
-        getFranciseLocations(0, new boolean[francises.size()], new ArrayList<Location>());
-
-        System.out.println(minChickDistanceOfCity);
+        calcChickenDist(0, 0);
+        System.out.println(min);
     }
 
-    static void getFranciseLocations(int depth, boolean[] isContains, List<Location> locations) {
+    static void calcChickenDist(int depth, int idx) {
         if (depth == M) {
-            getChickenDistance(locations);
-            
+            int total = 0;
+            for (int i = 0; i < houses.size(); i++) {
+                int dist = Integer.MAX_VALUE;
+                for (int j = 0; j < franchise.size(); j++) {
+                    if (visited[j]) {
+                        dist = Math.min(Math.abs(franchise.get(j).r - houses.get(i).r) + Math.abs(franchise.get(j).c - houses.get(i).c), dist);
+                    }
+
+                }
+                total += dist;
+            }
+            min = Math.min(total, min);
+
             return;
         }
 
-        for (int i=0; i<francises.size(); i++) {
-            if (!isContains[i]) {
-                isContains[i] = true;
-                locations.add(francises.get(i));
-                getFranciseLocations(depth + 1, isContains, locations);
-
-                locations.remove(locations.size()-1);
-                isContains[i] = false;
+        for (int i = idx; i < franchise.size(); i++) {
+            if (!visited[i]) {
+                visited[i] = true;
+                calcChickenDist(depth + 1, i + 1);
+                visited[i] = false;
             }
         }
-    }
-
-    static void getChickenDistance(List<Location> franciseLocations) {
-        int sumDistance = 0;
-        for (int i=0; i<houses.size(); i++) {
-            int hr = houses.get(i).r;
-            int hc = houses.get(i).c;
-            
-            int minDistance = 100;
-            for (int j=0; j<franciseLocations.size(); j++) {
-                Location franciseLocation = franciseLocations.get(j);
-                int fr = franciseLocation.r;
-                int fc = franciseLocation.c;
-                minDistance = Math.min(Math.abs(fr - hr) + Math.abs(fc - hc), minDistance);
-            }
-
-            sumDistance += minDistance;
-        }
-
-        minChickDistanceOfCity = Math.min(sumDistance, minChickDistanceOfCity);
     }
 
     static class Location {
