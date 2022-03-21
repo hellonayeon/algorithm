@@ -15,17 +15,18 @@ class Q01 {
         for (int i=0; i<N; i++) {
             people[i] = Integer.parseInt(st.nextToken());
         }
-
         Arrays.sort(people);
 
-        int group = 0;
-        for (int i=N-1; i>=0; i--) {
-            group++;
+        int group = 0; // 총 그룹 수
+        int cnt = 0; // 현재 그룹에 포함된 모험가의 수
+        for (int i=0; i<N; i++) {
+            cnt++;
 
-            int cnt = people[i];
-            while (cnt-- > 1) {
-                i--;
+            if (cnt >= people[i]) { // 모험가의 수가 현재 모험가의 공포도보다 같거나 큰 경우 그룹 결성
+                group++;
+                cnt = 0;
             }
+
         }
 
         System.out.println(group);
