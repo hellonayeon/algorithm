@@ -1,9 +1,6 @@
-#include <iostream>
-using namespace std;
+#include <cstdio>
 
 int main()
 {
-    cout << "Hello World!";
-
-    return 0;
+    puts("Hello World!");
 }
