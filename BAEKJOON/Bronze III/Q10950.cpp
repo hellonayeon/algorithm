@@ -1,18 +1,11 @@
-#include <iostream>
-#include <string>
-using namespace std;
+#include <cstdio>
 
-int main() {
-    int tc;
-    string ans("");
-
-    cin >> tc;
-
-    while (tc--) {
-        int A, B;
-        cin >> A >> B;
-        ans.append(to_string(A+B)).append("\n");
+int main()
+{
+    int a, b, t;
+    scanf("%d", &t);
+    while (t--) {
+        scanf("%d%d", &a, &b); 
+        printf("%d\n", a + b);
     }
-
-    cout << ans;
 }
