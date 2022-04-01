@@ -1,23 +1,19 @@
-#include <cstdio>
+#include <stdio.h>
+
+int n, k, coins[11];
 
 int main()
 {
-    int N, K;
-    scanf("%d %d", &N, &K);
-    
-    int coins[N];
-    for (int i=0; i<N; i++) {
+    scanf("%d %d", &n, &k);
+    for (int i=0; i<n; i++) {
         scanf("%d", &coins[i]);
     }
 
-    int ans = 0;
-    for (int i=N-1; i>=0; i--) {
-        if (coins[i] <= K) {
-            int cnt = K / coins[i];
-            K -= coins[i] * cnt;
-            ans += cnt;
-        }
+    int res = 0;
+    for (int i=n-1; i>=0; i--) {
+        res += k/coins[i];
+        k %= coins[i]; 
     }
 
-    printf("%d\n", ans);
+    printf("%d", res);
 }
