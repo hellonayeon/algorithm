@@ -8,27 +8,19 @@ import java.util.StringTokenizer;
 class Q10816 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        int[] nums = new int[20000001];
 
+        int N = Integer.parseInt(br.readLine());
         StringTokenizer st = new StringTokenizer(br.readLine());
-        Map<Integer, Integer> map = new HashMap<>();
         for (int i=0; i<N; i++) {
-            int num = Integer.parseInt(st.nextToken());
-            map.put(num, map.getOrDefault(num, 0) + 1);
+            nums[Integer.parseInt(st.nextToken()) + 10000000]++;
         }
 
         int M = Integer.parseInt(br.readLine());
         st = new StringTokenizer(br.readLine());
-        StringBuilder sb = new StringBuilder();
         for (int i=0; i<M; i++) {
-            int num = Integer.parseInt(st.nextToken());
-            Integer cnt = map.get(num);
-            if (cnt != null) {
-                sb.append(cnt).append(" ");
-            }
-            else {
-                sb.append(0).append(" ");
-            }
+            sb.append(nums[Integer.parseInt(st.nextToken())  + 10000000]).append(" ");
         }
 
         System.out.println(sb);
