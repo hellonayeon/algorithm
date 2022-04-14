@@ -13,75 +13,59 @@ import java.io.FileInputStream;
 
 class Q1952 {
 
-    static int[] fee = new int[4]; // 1일, 1개월, 3개월, 1년 요금
-    static int[] plan = new int[12];
-    static int[] cost = new int[12];
-    static boolean[] cnt3Month = new boolean[12];
+    static int[] fee = new int[4]; // 1일, 1달, 3달, 1년 요금
+    static int[] plan = new int[13];
 
-    static int minFee = 3600;
+    static int res;
 
     public static void main(String args[]) throws IOException {
         System.setIn(new FileInputStream("res/Q1952_input.txt"));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
         int T = Integer.parseInt(br.readLine());
         for (int tc = 1; tc <= T; tc++) {
-            inputPrice(br);
-            inputPlan(br);
-
-
-        }
-
-
-    }
-
-    private static void inputPrice(BufferedReader br) throws IOException {
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < 4; i++) {
-            fee[i] = Integer.parseInt(st.nextToken());
-        }
-    }
-
-    private static void inputPlan(BufferedReader br) throws IOException {
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < 12; i++) {
-            plan[i] = Integer.parseInt(st.nextToken());
-        }
-    }
-
-    private static int calcTotalFee() {
-        int totalFee = 0;
-        for (int i=0; i<12; i++) {
-            totalFee += cost[i];
-        }
-
-        return totalFee;
-    }
-
-    private static void useOneDayPass() {
-        for (int i=0; i<12; i++) {
-            cost[i] = plan[i] * fee[0];
-        }
-
-        Math.min(minFee, calcTotalFee());
-    }
-
-    private static void useOneMonthPass() {
-        for (int i=0; i<12; i++) {
-            if (cost[i] > fee[1]) {
-                cost[i] = fee[1];
+            // 요금 입력
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for (int i=0; i<4; i++) {
+                fee[i] = Integer.parseInt(st.nextToken());
             }
+
+            // 1년 이용 계획 입력
+            st = new StringTokenizer(br.readLine());
+            for (int i=1; i<=12; i++) {
+                plan[i] = Integer.parseInt(st.nextToken());
+            }
+
+            res = fee[3]; // 초기 최소 비용
+            dfs(1, 0);
+
+            sb.append("#").append(tc).append(" ").append(res).append("\n");
         }
 
-        Math.min(minFee, calcTotalFee());
+        System.out.println(sb);
     }
 
-    private static void useThreeMonthPass() {
-        /* 3달 이용권의 개수는 최소 0개, 최대 4개 */
-        // 1~3개의 경우의 수
-    }
+    private static void dfs(int month, int sum) {
+        if (sum >= res) return;
 
-    private static void useOneYearPass() {
-        Math.min(minFee, fee[3]);
+        if (month > 12) {
+            res = Math.min(res, sum);
+            return;
+        }
+
+        if (plan[month] == 0) {
+            dfs(month + 1, sum);
+        }
+        else {
+            // 1일 이용 요금
+            dfs(month + 1, sum + fee[0]*plan[month]);
+
+            // 1달 이용 요금
+            dfs(month + 1, sum + fee[1]);
+            
+            // 3달 이용 요금
+            dfs(month + 3, sum + fee[2]);
+        }
     }
 }
