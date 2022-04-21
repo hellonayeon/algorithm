@@ -13,6 +13,7 @@ class Q2115 {
     static int C;
     static int[][] map;
     static int[][] dp;
+    static int res;
 
     public static void main(String args[]) throws IOException {
         System.setIn(new FileInputStream("res/Q2115_input.txt"));
@@ -44,17 +45,15 @@ class Q2115 {
                 }
             }
             
-            int m1 = 0, m2 = 0;
+            res = 0;
             for (int i=0; i<N; i++) {
                 for (int j=0; j<N-M+1; j++) {
-                    if (dp[i][j] > m1) {
-                        m2 = m1;
-                        m1 = dp[i][j];
-                    }
+                    getMaxRevenue(i, j, i, j);
                 }
             }
+            
 
-            sb.append("#").append(tc).append(" ").append(m1 + m2).append("\n");
+            sb.append("#").append(tc).append(" ").append(res).append("\n");
         }
 
         System.out.println(sb);
@@ -66,19 +65,43 @@ class Q2115 {
      * @param sum       누적된 꿀의 양
      * @param square    누적된 수익
      * @param idx       다음 방문할 인덱스
+     * @param di        
+     * @param dj        
      */
-    public static void getMaxHoney(int[] unit, boolean[] chk, int sum, int square, int idx, int di, int dj) {
-        if (sum >= C) {
-            dp[di][dj] = Math.max(square, dp[di][dj]);
+    private static void getMaxHoney(int[] unit, boolean[] chk, int sum, int square, int depth, int di, int dj) {
+        if (sum > C || depth > M) {
             return;
         }
+
+        dp[di][dj] = Math.max(square, dp[di][dj]);
 
         for (int i=0; i<M; i++) {
             if (!chk[i]) {
                 chk[i] = true;
-                getMaxHoney(unit, chk, sum + unit[i], square + (unit[i]*unit[i]), i, di, dj);
+                getMaxHoney(unit, chk, sum + unit[i], square + (unit[i]*unit[i]), depth+1, di, dj);
                 chk[i] = false;
             }
+        }
+    }
+
+    private static void getMaxRevenue(int si, int sj, int ni, int nj) {
+        if (ni >= N) {
+            return;
+        }
+
+        if (si == ni) {
+            nj += M;
+        }
+        else {
+            nj += 1;
+        }
+
+        if (nj >= N - M + 1) {
+            getMaxRevenue(si, sj, ni+1, -1);
+        }
+        else {
+            res = Math.max(dp[ni][nj] + dp[si][sj], res);
+            getMaxRevenue(si, sj, ni, nj);
         }
     }
 }
