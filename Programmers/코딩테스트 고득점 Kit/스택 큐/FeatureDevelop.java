@@ -1,35 +1,29 @@
+import java.util.List;
 import java.util.ArrayList;
+
 
 class FeatureDevelop {
     public int[] solution(int[] progresses, int[] speeds) {
-        ArrayList<Integer> list = new ArrayList<>();
-
-        int[] days = new int[progresses.length]; // 배포까지 걸리는 일 수
-        for(int i = 0; i < days.length; i++) {
-            int progress = progresses[i];
-            while(progress < 100) {
-                progress += speeds[i];
-                days[i]++;
+        List<Integer> cnts = new ArrayList<>();
+        
+        
+        int day = (int) Math.ceil((100.0 - progresses[0])/speeds[0]);
+        int cnt = 1;
+        for (int i=1; i<progresses.length; i++) {
+            int nextProgress = progresses[i] + day*speeds[i];
+            
+            if (nextProgress >= 100) {
+                cnt++;
             }
-        }
-
-        int count = 1;
-        int day = days[0];
-        for(int i = 1; i < days.length; i++) {
-            if(days[i] <= day) count++;
             else {
-                list.add(count);
-                count = 1;
-                day = days[i];
+                cnts.add(cnt);
+                cnt = 1;
+                day += Math.ceil((100.0 - nextProgress)/speeds[i]);
             }
         }
-        list.add(count);
-
-        // list to int arr
-        int[] ans = new int[list.size()];
-        for(int i = 0; i < list.size(); i++)
-            ans[i] = list.get(i);
-
-        return ans;
+        cnts.add(cnt);
+        
+        int[] answer = cnts.stream().mapToInt(Integer::intValue).toArray();
+        return answer;
     }
 }
