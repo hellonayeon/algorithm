@@ -2,21 +2,26 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
-import java.util.Arrays;
+
 import java.io.FileInputStream;
 
-class Q2122 {
+import java.util.Arrays;
 
+class Q2117 {
+
+    static int[][] film; // A = 0, B = 1
+    static int K;
     static int D;
     static int W;
-    static int K;
-    static int[][] film; // 0(A), 1(B)
+    
     static int res;
 
     public static void main(String args[]) throws IOException {
-        System.setIn(new FileInputStream("res/Q2122_input.txt"));
+        System.setIn(new FileInputStream("res/Q2112_input.txt"));
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
+
         int T = Integer.parseInt(br.readLine());
         for (int tc = 1; tc <= T; tc++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
@@ -25,7 +30,6 @@ class Q2122 {
             K = Integer.parseInt(st.nextToken());
 
             film = new int[D][W];
-
             for (int r=0; r<D; r++) {
                 st = new StringTokenizer(br.readLine());
                 for (int c=0; c<W; c++) {
@@ -33,63 +37,62 @@ class Q2122 {
                 }
             }
 
-            res = Integer.MAX_VALUE;
-            injection(0, 0);
-            
-            res = (res == Integer.MAX_VALUE) ? 0 : res;
+            res = D;
+            inject(0, 0);
+
             sb.append("#").append(tc).append(" ").append(res).append("\n");
         }
 
-        System.out.println(sb);
+        System.out.print(sb);
     }
 
-    private static void injection(int depth, int cnt) {
+    private static void inject(int depth, int cnt) {
         if (cnt >= res) {
             return;
         }
-
         if (depth == D) {
             if (check()) {
-                res = Math.min(res, cnt);
-            }
+                res = Math.min(cnt, res);
+            } 
             return;
         }
 
         int[] tmp = film[depth].clone();
 
-        // 약물을 투입하지 않는 경우
-        injection(depth + 1, cnt);
+        // 약물을 투약하지 않는 경우
+        inject(depth + 1, cnt);
 
-        // A 약물을 투입하는 경우
+        // A 약물을 투약하는 경우
         Arrays.fill(film[depth], 0);
-        injection(depth + 1, cnt + 1);
+        inject(depth + 1, cnt + 1);
 
-        // B 약물을 투입하는 경우
+        // B 약물을 투약하는 경우
         Arrays.fill(film[depth], 1);
-        injection(depth + 1, cnt + 1);
-
+        inject(depth + 1, cnt + 1);
+        
         film[depth] = tmp;
     }
 
     private static boolean check() {
-        loop: 
         for (int c=0; c<W; c++) {
-            int cnt = 1; // 동일한 특성의 연속된 셀 개수
+            int cell = film[0][c];
+            int sum = 1;
             for (int r=1; r<D; r++) {
-                // 동일한 특성의 연속된 셀 개수 카운팅
-                if (film[r-1][c] == film[r][c]) {
-                    cnt++;
+                if (cell == film[r][c]) {
+                    sum++;
+                    // 다음 열 검사
+                    if (sum == K) {
+                        break;
+                    }
+                }
+                else if (r+K <= D) {
+                    cell = (cell == 0) ? 1 : 0;
+                    sum = 1;
                 }
                 else {
-                    cnt = 1;
-                }
-
-                // 연속된 동일한 특성 셀의 수가 K 이상이면 다음 열 검사
-                if (cnt >= K) {
-                    continue loop;
+                    return false;
                 }
             }
-            return false;
         }
         return true;
     }
