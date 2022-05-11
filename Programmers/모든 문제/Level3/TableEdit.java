@@ -1,20 +1,9 @@
 import java.util.Stack;
 
-
-
-
 class TableEdit {
     
     LinkedList table;
     Stack<Node> rmRow;
-    
-    public static void main(String[] args) {
-        int n = 2, k = 1;
-        String[] cmd = {"C"};
-
-        TableEdit te = new TableEdit();
-        System.out.println(te.solution(n, k, cmd));
-    }
 
     public String solution(int n, int k, String[] cmd) {
         table = new LinkedList();
@@ -74,7 +63,7 @@ class TableEdit {
         
         public void insert(Node prev, Node nnode) {
             if (head == null) {
-                head = tail = cur = nnode;
+                head = tail = nnode;
             }
             else {
                 tail.next = nnode;
@@ -83,35 +72,29 @@ class TableEdit {
             }
         }
         
-        public void select(int k) {            
+        public void select(int k) {
+            cur = head;
             while (cur.val != k) {
                 cur = cur.next;
             }
         }
         
         public void delete(Node dnode) {
-            Node tmp = head;
-            
             // 처음 노드를 삭제하는 경우
             if (head.val == dnode.val) {
-                head = cur= head.next;
+                head.next.prev = null;
+                head = cur = head.next;
             }
             // 마지막 노드를 삭제하는 경우
             else if (tail.val == dnode.val) {
+                tail.prev.next = null;
                 tail = cur = tail.prev;
-                tail.next = null;
             }
             // 중간 노드를 삭제하는 경우
             else {
-                while (tmp.next != null) {
-                    if (tmp.val == dnode.val) {
-                        tmp.prev.next = tmp.next;
-                        tmp.next.prev = tmp.prev;
-                        cur = tmp.next;
-                        break;
-                    }
-                    tmp = tmp.next;
-                }
+                dnode.prev.next = dnode.next;
+                dnode.next.prev = dnode.prev;
+                cur = dnode.next;
             }
         }
         
@@ -119,6 +102,7 @@ class TableEdit {
         public void restore(Node rnode) {
             // 처음 노드 복구
             if (rnode.prev == null) {
+                head.prev = rnode;
                 rnode.next = head;
                 head = rnode;
             }
@@ -154,15 +138,12 @@ class TableEdit {
         public String search(int n) {
             StringBuilder sb = new StringBuilder();
             Node tmp = head;
-            
             for (int r=0; r<n; r++) {
-                // 마지막 노드가 삭제되어 없는 경우
                 if (tmp == null) {
+                    // 마지막 노드가 삭제되어 없는 경우 (tmp.next = null)
                     sb.append("X");
-                    break;
                 }
-                
-                if (tmp.val == r) {
+                else if (tmp.val == r) {
                     sb.append("O");
                     tmp = tmp.next;
                 }
