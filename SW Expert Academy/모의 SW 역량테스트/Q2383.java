@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.LinkedList;
-import java.util.HashSet;
 
 import java.io.FileInputStream;
 
@@ -16,6 +15,7 @@ class Q2383 {
 
     static List<Person> people;
     static Stair[] stairs;
+    static int[] match; // 선택된 계단
     static PriorityQueue<Person>[] pqs;
     static int N;
     static int res;
@@ -54,9 +54,10 @@ class Q2383 {
                 }
             }
             
+            match = new int[people.size()];
             res = Integer.MAX_VALUE;
             for (int r=0; r<people.size(); r++) {
-                distribute(new HashSet<>(), new boolean[people.size()], 0, r);
+                distribute(0);
             }
             
             
@@ -67,37 +68,30 @@ class Q2383 {
 
     // 사람은 1번 계단 또는 2번 계단 이용 가능
     // 각 계단을 내려갈 사람들 구하기
-    private static void distribute(HashSet<Integer> idxs, boolean[] distributed, int idx, int r) {
-        if (r == 0) {
-            getAtime(idxs);
+    private static void distribute(int idx) {
+        if (idx == match.length) {
+            getAtime();
             down();
-            System.out.println("hell");
             return;
         }
 
-        for (int i=0; i<people.size(); i++) {
-            if (!distributed[i]) {
-                distributed[i] = true;
-                idxs.add(i);
-                distribute(idxs, distributed, i, r-1);
-                idxs.remove(i);
-                distributed[i] = false;
-            }
+        for (int sidx=0; sidx<2; sidx++) {
+            match[idx] = sidx;
+            distribute(idx + 1);
         }
     }
 
-    private static void getAtime(HashSet<Integer> idxs) {
-        for (int idx=0; idx<people.size(); idx++) {
-            int sidx = (idxs.contains(idx)) ? 0 : 1;
-            
+    private static void getAtime() {
+        for (int idx=0; idx<people.size(); idx++) {    
             Person p = people.get(idx);
+            int sidx = match[idx];
             p.setAtime(stairs[sidx].x, stairs[sidx].y); 
             pqs[sidx].add(p);
         }
     }
 
     private static void down() {
-        int totalTime = Integer.MAX_VALUE;
+        int totalTime = 0;
 
         for (int sidx=0; sidx<2; sidx++) {
             
@@ -106,25 +100,9 @@ class Q2383 {
                 continue;
             }
 
-            int time = pqs[sidx].peek().atime;
-            Queue<Person> peopleOnStair = new LinkedList<>();
-            Person person = pqs[sidx].poll();
-            person.setDtime(time + 1); // 도착 후 1초 뒤 계단 내려가기 시작
-            peopleOnStair.add(person);
-
-            while (true) {
-                if (pqs[sidx].peek() == null) {
-                    break;
-                }
-
-                if (pqs[sidx].peek().atime == time) {
-                    peopleOnStair.add(pqs[sidx].poll());
-                }
-                else {
-                    break;
-                }
-            }
             
+            Queue<Person> peopleOnStair = new LinkedList<>();
+            int time = 0;
             while (true) {
                 time++;
 
@@ -135,7 +113,8 @@ class Q2383 {
 
                 // 모든 사람이 계단을 내려간 경우
                 if (pqs[sidx].isEmpty() && peopleOnStair.isEmpty()) {
-                    totalTime = Math.min(time, totalTime);
+                    // 두 계단 중 시간이 더 오래 걸린 계단
+                    totalTime = Math.max(time, totalTime);
                     break;
                 }
 
@@ -153,10 +132,8 @@ class Q2383 {
                 }
                 
             }
-
-            res = Math.min(totalTime, res);
         }
-
+        res = Math.min(totalTime, res);
     }
 
 
