@@ -4,24 +4,27 @@ class TableEdit {
     
     LinkedList table;
     Stack<Node> rmRow;
+    Node cur;
 
     public String solution(int n, int k, String[] cmd) {
         table = new LinkedList();
         rmRow = new Stack<>();
         
-        Node prev = null;
-        for (int r=0; r<n; r++) {
-            Node node = new Node(r);
-            table.insert(prev, node);
-            prev = node;
+        cur = table.init(n);
+        while (cur.idx != k) {
+            cur = cur.next;
         }
-        table.select(k);
         
         for (int i=0; i<cmd.length; i++) {
             execute(cmd[i]);
         }
         
-        return table.search(n);
+        StringBuilder answer = new StringBuilder("O".repeat(n));
+        while (!rmRow.empty()) {
+            answer.setCharAt(rmRow.pop().idx, 'X');
+        }
+
+        return answer.toString();
     }
     
     private void execute(String cmd) {
@@ -29,139 +32,73 @@ class TableEdit {
         String action = args[0];
         
         int cnt;
-        Node node;
         switch (action) {
             case "U":
                 cnt = Integer.parseInt(args[1]);
-                table.up(cnt);
+                while (cnt-- > 0) {
+                    cur = cur.prev;
+                }
                 break;
                 
             case "D":
                 cnt = Integer.parseInt(args[1]);
-                table.down(cnt);
+                while (cnt-- > 0) {
+                    cur = cur.next;
+                }
                 break;
                 
             case "C":
-                node = table.getCur();
-                rmRow.push(node);
-                table.delete(node);
+                rmRow.push(cur);
+                cur.remove();
+                cur = cur.hasNext() ? cur.next : cur.prev;
                 break;
                 
             case "Z":
-                node = rmRow.pop();
-                table.restore(node);
+                rmRow.pop().restore();
                 break;
         }
     }
     
     class LinkedList {
-        Node head, tail, cur;
-        
-        public LinkedList() {
-            head = tail = cur = null;
-        }
-        
-        public void insert(Node prev, Node nnode) {
-            if (head == null) {
-                head = tail = nnode;
+        // head 노드 반환
+        public Node init(int n) {
+            Node head = new Node(-1); // node.prev null pointer 예방
+            Node prev = head;
+            Node tail = null;
+
+            for (int idx=0; idx<n; idx++) {
+                tail = new Node(idx);
+                prev.next = tail;
+                tail.prev = prev;
+                prev = tail;
             }
-            else {
-                tail.next = nnode;
-                tail = nnode;
-                nnode.prev = prev;
-            }
-        }
-        
-        public void select(int k) {
-            cur = head;
-            while (cur.val != k) {
-                cur = cur.next;
-            }
-        }
-        
-        public void delete(Node dnode) {
-            // 처음 노드를 삭제하는 경우
-            if (head.val == dnode.val) {
-                head.next.prev = null;
-                head = cur = head.next;
-            }
-            // 마지막 노드를 삭제하는 경우
-            else if (tail.val == dnode.val) {
-                tail.prev.next = null;
-                tail = cur = tail.prev;
-            }
-            // 중간 노드를 삭제하는 경우
-            else {
-                dnode.prev.next = dnode.next;
-                dnode.next.prev = dnode.prev;
-                cur = dnode.next;
-            }
-        }
-        
-        // 노드 복구 ('Z' 수행)
-        public void restore(Node rnode) {
-            // 처음 노드 복구
-            if (rnode.prev == null) {
-                head.prev = rnode;
-                rnode.next = head;
-                head = rnode;
-            }
-            // 마지막 노드 복구
-            else if (rnode.next == null) {
-                rnode.prev = tail;
-                tail.next = rnode;
-                tail = rnode;
-            }
-            // 중간 노드 복구
-            else {
-                rnode.prev.next = rnode;
-                rnode.next.prev = rnode;
-            }
-        }
-        
-        public void up(int cnt) {
-            while (cnt-- > 0) {
-                cur = cur.prev;
-            }
-        }
-        
-        public void down(int cnt) {
-            while (cnt-- > 0) {
-                cur = cur.next;
-            }
-        }
-        
-        public Node getCur() {
-            return cur;
-        }
-        
-        public String search(int n) {
-            StringBuilder sb = new StringBuilder();
-            Node tmp = head;
-            for (int r=0; r<n; r++) {
-                if (tmp == null) {
-                    // 마지막 노드가 삭제되어 없는 경우 (tmp.next = null)
-                    sb.append("X");
-                }
-                else if (tmp.val == r) {
-                    sb.append("O");
-                    tmp = tmp.next;
-                }
-                else {
-                    sb.append("X");
-                }
-            }
-            return sb.toString();
+            tail.next = new Node(-1); // node.next null pointer 예방
+            
+            return head.next;
         }
     }
     
     class Node {
-        int val;
+        int idx;
         Node prev;
         Node next;
         
-        public Node(int val) {
-            this.val = val;    
+        public Node(int idx) {
+            this.idx = idx;    
+        }
+
+        public boolean hasNext() {
+            return next.idx != -1;
+        }
+
+        public void remove() {
+            prev.next = next;
+            next.prev = prev;
+        }
+
+        public void restore() {
+            prev.next = this;
+            next.prev = this;
         }
     }  
 }
