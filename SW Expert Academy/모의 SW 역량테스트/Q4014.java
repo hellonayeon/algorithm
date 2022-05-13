@@ -9,7 +9,6 @@ class Q4014 {
 
     static int N, K;
     static int[][] map;
-    static boolean[] slope;
     static int res;
 
     public static void main(String args[]) throws IOException {
