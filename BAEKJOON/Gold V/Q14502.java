@@ -1,122 +1,108 @@
-// [출처] https://minhamina.tistory.com/69
-
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Queue;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 class Q14502 {
-    final static int[] dx = { 0, 0, -1, 1 };
-    final static int[] dy = { -1, 1, 0, 0 };
 
-    static int N, M; // 세로, 가로
+    static final int[] dx = {-1, 0, 1, 0};
+    static final int[] dy = {0, 1, 0, -1};
+    static int N;
+    static int M;
     static int[][] map;
-    static List<Position> virusPosList = new ArrayList<>();
-    static int ans = 0;
-
-    public static class Position {
-        int x;
-        int y;
-
-        public Position(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+    static List<int[]> viruses;
+    static int res = 0;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
         map = new int[N][M];
-        for (int i = 0; i < N; i++) {
+        viruses = new ArrayList<>();
+        for (int x=0; x<N; x++) {
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < M; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
-
-                if (map[i][j] == 2) {
-                    virusPosList.add(new Position(i, j));
+            for (int y=0; y<M; y++) {
+                map[x][y] = Integer.parseInt(st.nextToken());
+                if (map[x][y] == 2) {
+                    viruses.add(new int[]{x, y});
                 }
             }
         }
 
-        buildWall(0);
-
-        System.out.println(ans);
+        installWall(0);
+        System.out.println(res);
     }
 
-    private static void buildWall(int depth) {
-        if (depth == 3) {
-            int[][] copyMap = copyMap();
-            spreadVirus(copyMap);
+    private static void installWall(int cnt) {
+        if (cnt == 3) {
+            int[][] vmap = spreadVirus();
+            checkSafeArea(vmap);
             return;
         }
 
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (map[i][j] == 0) {
-                    map[i][j] = 1;
-                    buildWall(depth + 1);
-                    map[i][j] = 0;
+        for (int x=0; x<N; x++) {
+            for (int y=0; y<M; y++) {
+                if (map[x][y] == 0) {
+                    map[x][y] = 1;
+                    installWall(cnt + 1);
+                    map[x][y] = 0;
                 }
             }
         }
     }
 
-    private static int[][] copyMap() {
-        int[][] copyMap = new int[N][M];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                copyMap[i][j] = map[i][j];
+    private static int[][] spreadVirus() {
+        int[][] vmap = copyWallMap();
+        
+        for (int i=0; i<viruses.size(); i++) {
+            Queue<int[]> q = new LinkedList<>();
+            q.add(viruses.get(i));
+
+            while (!q.isEmpty()) {
+                int v[] = q.poll();
+                for (int k=0; k<4; k++) {
+                    int nx = v[0] + dx[k];
+                    int ny = v[1] + dy[k]; 
+
+                    if (nx >= 0 && nx < N && ny >= 0 && ny < M && vmap[nx][ny] == 0) {
+                        vmap[nx][ny] = 2;
+                        q.add(new int[]{nx, ny});
+                    }
+                }
             }
         }
-
-        return copyMap;
+        
+        return vmap;
     }
 
-    private static void spreadVirus(int[][] copyMap) {
-        Queue<Position> q = new LinkedList<>();
-
-        for (int i = 0; i < virusPosList.size(); i++) {
-            q.add(virusPosList.get(i));
-        }
-
-        while (!q.isEmpty()) {
-            Position pos = q.poll();
-
-            for (int k = 0; k < 4; k++) {
-                int nx = pos.x + dx[k];
-                int ny = pos.y + dy[k];
-
-                if (nx < 0 || nx >= N || ny < 0 || ny >= M || copyMap[nx][ny] != 0)
-                    continue;
-
-                copyMap[nx][ny] = 2;
-                q.add(new Position(nx, ny));
+    private static int[][] copyWallMap() {
+        int[][] vmap = new int[N][M];
+        for (int x=0; x<N; x++) {
+            for (int y=0; y<M; y++) {
+                vmap[x][y] = map[x][y];
             }
         }
-
-        getSafetyArea(copyMap);
+        return vmap;
     }
 
-    private static void getSafetyArea(int[][] copyMap) {
+    private static void checkSafeArea(int[][] vmap) {
         int cnt = 0;
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (copyMap[i][j] == 0)
+        for (int x=0; x<N; x++) {
+            for (int y=0; y<M; y++) {
+                if (vmap[x][y] == 0) {
                     cnt++;
+                }
             }
         }
 
-        ans = Math.max(cnt, ans);
+        res = Math.max(cnt, res);
     }
 }
