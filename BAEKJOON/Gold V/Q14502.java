@@ -15,7 +15,8 @@ class Q14502 {
     static int N;
     static int M;
     static int[][] map;
-    static List<int[]> viruses;
+    static List<Position> blanks;
+    static List<Position> viruses;
     static int res = 0;
 
     public static void main(String[] args) throws IOException {
@@ -26,55 +27,58 @@ class Q14502 {
         M = Integer.parseInt(st.nextToken());
 
         map = new int[N][M];
+        blanks = new ArrayList<>();
         viruses = new ArrayList<>();
         for (int x=0; x<N; x++) {
             st = new StringTokenizer(br.readLine());
             for (int y=0; y<M; y++) {
                 map[x][y] = Integer.parseInt(st.nextToken());
-                if (map[x][y] == 2) {
-                    viruses.add(new int[]{x, y});
+                if (map[x][y] == 0) {
+                    blanks.add(new Position(x, y));
                 }
+                else if (map[x][y] == 2) {
+                    viruses.add(new Position(x, y));
+                } 
             }
         }
 
-        installWall(0);
+        solution();
         System.out.println(res);
     }
 
-    private static void installWall(int cnt) {
-        if (cnt == 3) {
-            int[][] vmap = spreadVirus();
-            checkSafeArea(vmap);
-            return;
-        }
-
-        for (int x=0; x<N; x++) {
-            for (int y=0; y<M; y++) {
-                if (map[x][y] == 0) {
-                    map[x][y] = 1;
-                    installWall(cnt + 1);
-                    map[x][y] = 0;
+    private static void solution() {
+        for (int i=0; i<blanks.size()-2; i++) {
+            for (int j=i+1; j<blanks.size()-1; j++) {
+                for (int k=j+1; k<blanks.size(); k++) {
+                    installWall(blanks.get(i), blanks.get(j), blanks.get(k), 1);
+                    int[][] vmap = spreadVirus();
+                    checkSafeArea(vmap);
+                    installWall(blanks.get(i), blanks.get(j), blanks.get(k), 0);
                 }
             }
         }
+    }
+
+    private static void installWall(Position p1, Position p2, Position p3, int wall) {
+        map[p1.x][p1.y] = map[p2.x][p2.y] = map[p3.x][p3.y] = wall;
     }
 
     private static int[][] spreadVirus() {
         int[][] vmap = copyWallMap();
         
         for (int i=0; i<viruses.size(); i++) {
-            Queue<int[]> q = new LinkedList<>();
+            Queue<Position> q = new LinkedList<>();
             q.add(viruses.get(i));
 
             while (!q.isEmpty()) {
-                int v[] = q.poll();
+                Position pos = q.poll();
                 for (int k=0; k<4; k++) {
-                    int nx = v[0] + dx[k];
-                    int ny = v[1] + dy[k]; 
+                    int nx = pos.x + dx[k];
+                    int ny = pos.y + dy[k]; 
 
                     if (nx >= 0 && nx < N && ny >= 0 && ny < M && vmap[nx][ny] == 0) {
                         vmap[nx][ny] = 2;
-                        q.add(new int[]{nx, ny});
+                        q.add(new Position(nx, ny));
                     }
                 }
             }
@@ -104,5 +108,15 @@ class Q14502 {
         }
 
         res = Math.max(cnt, res);
+    }
+    
+    static class Position {
+        int x;
+        int y;
+
+        public Position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }
