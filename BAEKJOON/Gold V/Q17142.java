@@ -34,10 +34,10 @@ class Q17142 {
         for (int x=0; x<N; x++) {
             st = new StringTokenizer(br.readLine());
             for (int y=0; y<N; y++) {
-                map[x][y] = Integer.parseInt(st.nextToken())*(-1);
+                map[x][y] = Integer.parseInt(st.nextToken());
 
-                if (map[x][y] == -2) {
-                    viruses.add(new Position(x, y));
+                if (map[x][y] == 2) {
+                    viruses.add(new Position(x, y, 0));
                 }
                 else if (map[x][y] == 0) {
                     blankCnt++;
@@ -59,12 +59,13 @@ class Q17142 {
             }
             
             Queue<Position> q = new LinkedList<>();
+            boolean[][] visit = new boolean[N][N];
             for (Position pos : activeViruses) {
-                pos.setTime(0);
+                visit[pos.x][pos.y] = true;
                 q.add(pos);
             }
             
-            spread(q, new boolean[N][N]);
+            spread(q, visit);
             return;
         }
 
@@ -85,16 +86,23 @@ class Q17142 {
                 int nx = pos.x + dx[k];
                 int ny = pos.y + dy[k];
 
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (map[nx][ny] == 0 && !visit[nx][ny]) {
+                if (nx >= 0 && nx < N && ny >= 0 && ny < N && !visit[nx][ny]) {
+                    if ((map[nx][ny] == 0 || map[nx][ny] == 2)) {
                         visit[nx][ny] = true;
                         time = pos.time + 1;
                         q.add(new Position(nx, ny, time));
+                    }
+
+                    if (map[nx][ny] == 0) {
                         spreadCnt++;
+                    }
+
+                    if (blankCnt == spreadCnt) {
+                        res = Math.min(time, res);
+                        return;
                     }
                 }
             }
-            
         }
 
         if (blankCnt == spreadCnt) {
@@ -108,18 +116,9 @@ class Q17142 {
         int y;
         int time;
 
-        public Position (int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
         public Position(int x, int y, int time) {
             this.x = x;
             this.y = y;
-            this.time = time;
-        }
-
-        public void setTime(int time) {
             this.time = time;
         }
     }
