@@ -19,6 +19,7 @@ class Q17142 {
     static int[][] map;
     static List<Position> viruses;
     static List<Position> activeViruses;
+    static int blankCnt = 0;
     static int res;
 
     public static void main(String[] args) throws IOException {
@@ -38,53 +39,45 @@ class Q17142 {
                 if (map[x][y] == -2) {
                     viruses.add(new Position(x, y));
                 }
+                else if (map[x][y] == 0) {
+                    blankCnt++;
+                }
             }
         }
 
         res = N*N;
-        activate(0, new boolean[viruses.size()]);
+        activate(0, new boolean[viruses.size()], 0);
 
-        res = (res == N*N) ? -1 : res - 1;
+        res = (res == N*N) ? -1 : res;
         System.out.println(res);
     }
 
-    private static int[][] copyMap() {
-        int[][] vmap = new int[N][N];
-        for (int x=0; x<N; x++) {
-            for (int y=0; y<N; y++) {
-                vmap[x][y] = map[x][y];
-            }
-        }
-        return vmap;
-    }
-
-    private static void activate(int cnt, boolean[] active) {
+    private static void activate(int cnt, boolean[] active, int idx) {
         if (cnt == M) {
-            int[][] vmap = copyMap();
-            Queue<Position> q = new LinkedList<>();
-            for (Position pos : activeViruses) {
-                q.add(pos);
-                vmap[pos.x][pos.y] = 1; // 빈 영역과 구분하기 위해 활성화된 바이러스는 1로 표시
+            if (activeViruses.size() < M) {
+                return;
             }
             
-            spread(q, vmap);
+            Queue<Position> q = new LinkedList<>();
+            for (Position pos : activeViruses) {
+                pos.setTime(0);
+                q.add(pos);
+            }
+            
+            spread(q, new boolean[N][N]);
             return;
         }
 
-        for (int i=0; i<viruses.size(); i++) {
-            if (!active[i]) {
-                active[i] = true;
-                activeViruses.add(viruses.get(i));
-                activate(cnt + 1, active);
-                active[i] = false;
-                activeViruses.remove(viruses.get(i));
-            }
-            
+        for (int i = idx; i < viruses.size(); i++) {
+            activeViruses.add(viruses.get(i));
+            activate(cnt + 1, active, i + 1);
+            activeViruses.remove(viruses.get(i));
         }
     }
 
-    private static void spread(Queue<Position> q, int[][] vmap) {
-        int time = 1;
+    private static void spread(Queue<Position> q, boolean[][] visit) {
+        int time = 0;
+        int spreadCnt = 0;
         while (!q.isEmpty()) {
             Position pos = q.poll();
 
@@ -93,38 +86,41 @@ class Q17142 {
                 int ny = pos.y + dy[k];
 
                 if (nx >= 0 && nx < N && ny >= 0 && ny < N) {
-                    if (vmap[nx][ny] == 0) {
-                        vmap[nx][ny] = time = vmap[pos.x][pos.y] + 1;
-                        q.add(new Position(nx, ny));
+                    if (map[nx][ny] == 0 && !visit[nx][ny]) {
+                        visit[nx][ny] = true;
+                        time = pos.time + 1;
+                        q.add(new Position(nx, ny, time));
+                        spreadCnt++;
                     }
                 }
             }
+            
         }
 
-        if (isAllSpread(vmap)) {
+        if (blankCnt == spreadCnt) {
             res = Math.min(time, res);
         }
-    }
-
-    private static boolean isAllSpread(int[][] vmap) {
-        for (int x=0; x<N; x++) {
-            for (int y=0; y<N; y++) {
-                if (vmap[x][y] == 0) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
 
     static class Position {
         int x;
         int y;
+        int time;
 
         public Position (int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        public Position(int x, int y, int time) {
+            this.x = x;
+            this.y = y;
+            this.time = time;
+        }
+
+        public void setTime(int time) {
+            this.time = time;
         }
     }
 }
