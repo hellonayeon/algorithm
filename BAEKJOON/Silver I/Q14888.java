@@ -28,47 +28,41 @@ class Q14888 {
             op[i] = Integer.parseInt(st.nextToken());
         }
 
-        setOperation(0, new int[N-1]);
+        setOperation(0, nums[0]);
 
         System.out.println(max);
         System.out.println(min);
     }
 
-    private static void setOperation(int idx, int[] opComb) {
+    private static void setOperation(int idx, int value) {
         if (idx == N-1) {
-            operate(opComb);
+            max = Math.max(value, max);
+            min = Math.min(value, min);
             return;
         }
         
         for (int k=0; k<4; k++) {
             if (op[k] != 0) {
-                op[k] -= 1;
-                opComb[idx] = k;
-                setOperation(idx + 1, opComb);
+                op[k]--;
+                setOperation(idx + 1, operate(value, nums[idx + 1], k));
                 op[k]++;
             }
         }
     }
 
-    private static void operate(int[] opComb) {
-        int res = nums[0];
-        int nidx = 1;
-        for (int i=0; i<N-1; i++, nidx++) {
-            if (opComb[i] == 0) {
-                res += nums[nidx];
-            }
-            else if (opComb[i] == 1) {
-                res -= nums[nidx];
-            }
-            else if (opComb[i] == 2) {
-                res *= nums[nidx];
-            }
-            else {
-                res /= nums[nidx];
-            }
+    private static int operate(int value, int next, int op) {
+        if (op == 0) {
+            value += next;
         }
-
-        max = Math.max(res, max);
-        min = Math.min(res, min);
+        else if (op == 1) {
+            value -= next;
+        }
+        else if (op == 2) {
+            value *= next;
+        }
+        else {
+            value /= next;
+        }
+        return value;
     }
 }
