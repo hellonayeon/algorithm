@@ -9,8 +9,9 @@ import java.util.ArrayList;
 
 class Q15681 {
 
-    static ArrayList<Integer>[] list, tree;
-    static int parent[], size[];
+    static ArrayList<Integer>[] list;
+    static boolean[] visit;
+    static int[] dp;
 
     public static void main(String[] args) throws IOException {
         
@@ -21,14 +22,12 @@ class Q15681 {
         int R = Integer.parseInt(st.nextToken());
         int Q = Integer.parseInt(st.nextToken());
 
-        parent = new int[N+1];
-        size = new int[N+1];
         list = new ArrayList[N+1];
-        tree = new ArrayList[N+1];
+        visit = new boolean[N+1];
+        dp = new int[N+1];
 
         for (int i=0; i<list.length; i++) {
             list[i] = new ArrayList<>();
-            tree[i] = new ArrayList<>();
         }
 
         for (int i=1; i<N; i++) {
@@ -40,37 +39,28 @@ class Q15681 {
             list[V].add(U);
         }
 
-        makeTree(R, -1);
-        countSubtreeNodes(R);
+       dfs(R);
 
         StringBuilder sb = new StringBuilder();
         while (Q-- > 0) {
             int query = Integer.parseInt(br.readLine());
-            sb.append(size[query]).append("\n");
+            sb.append(dp[query]).append("\n");
         }
         System.out.println(sb);
     }
 
-    // 현재 노드 = 부모노드, 현재 노드와 연결된 다른 노드들 = 자식노드
-    // 현재 노드와 연결되어 있는 노드들을 자식 노드로 삽입
-    public static void makeTree(int curNode, int p) {
-        for (int node : list[curNode]) {
-            // 양방향으로 연결했으니, 부모-자식 연결관계 총 2개
-            // 부모노드로 다시 돌아가지 않도록, 부모노드는 생략
-            if (node != p) {
-                tree[curNode].add(node);
-                parent[node] = curNode; // 현재노드에 대한 부모노드 정보 저장
-                makeTree(node, curNode);
-            }
-        }
-    }
+    public static int dfs(int now) {
 
-    public static void countSubtreeNodes(int curNode) {
-        size[curNode] = 1; // 서브트리에 속한 정점은 자기 자신도 포함
+        if (dp[now] != 0) return dp[now];
+        visit[now] = true;
+        int count = 1;
 
-        for (int node : tree[curNode]) {
-            countSubtreeNodes(node);
-            size[curNode] += size[node];
+        for (int node : list[now]) {
+            if (visit[node]) continue;
+            count += dfs(node);
         }
+        dp[now] = count;
+
+        return dp[now];
     }
 }
